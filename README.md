@@ -1,13 +1,17 @@
 # Human-Readable Weather API
 
-Weather API is a RESTful API written in Go using go-chi and the [openweathermap](https://openweathermap.org/) API, designed for human readability
+Weather API is a RESTful API written in Go using [go-chi](https://github.com/go-chi/chi) and the [openweathermap](https://openweathermap.org/) API, designed for human readability
 
 ## Running from source code
+clone de repo and execute
+
 ```bash
+$ asdf intall # if you are using [asdf](https://asdf-vm.com/#) :smile:
+$ go mod tidy
 $ PORT=1234 API_ID=apikeystring go run cmd/*.go
 ```
 
-## Docs
+## Usage
 
 ### `GET weather` current weather data for city
 Access current weather data for any location and get an object representing weather in a human readable way
@@ -57,3 +61,7 @@ $ curl -i http://localhost:3333/weather\?city\=queretaro\&country\=mx\&forecast\
 - [ ] Add an additional GET parameter that allows getting the forecast of a specific day. The parameter value is between 0 and 6(0 is for today). TIP: you have to use an additional openweather endpoint.
 - [ ] add docker
 - [ ] request openweathermap API concurrently using go routines
+
+## Notes
+> Feel free to comment with any suggestion that may improve the code
+
