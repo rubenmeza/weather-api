@@ -103,7 +103,7 @@ func (owr *OpenWeatherResponse) getHumanReadablePressure() string {
 }
 
 func (owr *OpenWeatherResponse) getHumanReadableHumidity() string {
-	return fmt.Sprintf("%s", owr.Main.Humidity)
+	return fmt.Sprintf("%d%%", owr.Main.Humidity)
 }
 
 func (owr *OpenWeatherResponse) getHumanReadableSunrise() string {
