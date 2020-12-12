@@ -89,7 +89,8 @@ func (owr *OpenWeatherResponse) getHumanReadableTemperature() string {
 }
 
 func (owr *OpenWeatherResponse) getHumanReadableWind() string {
-	return fmt.Sprintf("%s, %s", owr.Wind.Speed, owr.Wind.Deg)
+	direction := getWindCardinalDirection(owr.Wind.Deg)
+	return fmt.Sprintf("%2.f m/s, %s", owr.Wind.Speed, direction)
 }
 
 func (owr *OpenWeatherResponse) getHumanReadableCloudiness() string {
@@ -115,4 +116,10 @@ func (owr *OpenWeatherResponse) getHumanReadableSunset() string {
 
 func (owr *OpenWeatherResponse) getHumanReadableGeoCoordinates() string {
 	return fmt.Sprintf("[%f, %i]", owr.Coord.Lon, owr.Coord.Lat)
+}
+
+func getWindCardinalDirection(deg int) string {
+	cardinalDirections := [16]string{"north", "north-northeast", "northeast", "east-northeast", "east", "east-southeast", "southeast", "south-southeast", "south", "south-southwest", "southwest", "west-southwest", "west", "west-northwest", "northwest", "north-northwest"}
+	cardinalIndex := int((float64(deg) / 22.5) + 0.5)
+	return cardinalDirections[cardinalIndex]
 }
