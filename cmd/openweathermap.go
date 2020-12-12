@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -58,7 +59,11 @@ type OpenWeatherError struct {
 
 // GetOpenWeather get weather by city and country
 func GetOpenWeather(city string, country string) (*OpenWeatherResponse, error) {
-	url := "https://api.openweathermap.org/data/2.5/weather?q=" + city + "," + country + "&units=metric&appid=1508a9a4840a5574c822d70ca2132032"
+	apiid, ok := os.LookupEnv("API_ID")
+	if ok == false {
+		return nil, errors.New("enviroment variable API_ID must be defined")
+	}
+	url := "https://api.openweathermap.org/data/2.5/weather?q=" + city + "," + country + "&units=metric&appid=" + apiid
 	fmt.Println(url)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

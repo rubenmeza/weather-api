@@ -1,7 +1,10 @@
 package main
 
 import (
+	"errors"
+	"log"
 	"net/http"
+	"os"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -9,6 +12,11 @@ import (
 )
 
 func main() {
+	port, ok := os.LookupEnv("PORT")
+	if ok == false {
+		log.Fatal(errors.New("enviroment variable PORT must be defined"))
+		return
+	}
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
@@ -19,5 +27,5 @@ func main() {
 
 	r.Mount("/weather", weatherResource{}.Routes())
 
-	http.ListenAndServe(":3333", r)
+	http.ListenAndServe(":"+port, r)
 }
