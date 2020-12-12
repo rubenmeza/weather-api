@@ -56,7 +56,7 @@ type OpenWeatherError struct {
 
 // GetOpenWeather get weather by city and country
 func GetOpenWeather(city string, country string) (*OpenWeatherResponse, error) {
-	url := "https://api.openweathermap.org/data/2.5/weather?q=" + city + "," + country + "&appid=1508a9a4840a5574c822d70ca2132032"
+	url := "https://api.openweathermap.org/data/2.5/weather?q=" + city + "," + country + "&units=metric&appid=1508a9a4840a5574c822d70ca2132032"
 	fmt.Println(url)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -85,7 +85,7 @@ func (owr *OpenWeatherResponse) getHumanReadableLocation() string {
 }
 
 func (owr *OpenWeatherResponse) getHumanReadableTemperature() string {
-	return fmt.Sprintf("%s", owr.Main.Temp)
+	return fmt.Sprintf("%.0f °C", owr.Main.Temp)
 }
 
 func (owr *OpenWeatherResponse) getHumanReadableWind() string {
