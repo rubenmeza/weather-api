@@ -94,8 +94,8 @@ func (owr *OpenWeatherResponse) getHumanReadableWind() string {
 }
 
 func (owr *OpenWeatherResponse) getHumanReadableCloudiness() string {
-	// necesario iterar sobre owr.Weather
-	return fmt.Sprintf("%s", owr.Clouds.All)
+	cloudines := getCloudines(*owr)
+	return fmt.Sprintf("%s", cloudines)
 }
 
 func (owr *OpenWeatherResponse) getHumanReadablePressure() string {
@@ -122,4 +122,14 @@ func getWindCardinalDirection(deg int) string {
 	cardinalDirections := [16]string{"north", "north-northeast", "northeast", "east-northeast", "east", "east-southeast", "southeast", "south-southeast", "south", "south-southwest", "southwest", "west-southwest", "west", "west-northwest", "northwest", "north-northwest"}
 	cardinalIndex := int((float64(deg) / 22.5) + 0.5)
 	return cardinalDirections[cardinalIndex]
+}
+
+func getCloudines(owr OpenWeatherResponse) string {
+	var cloudines string
+	for _, w := range owr.Weather {
+		if w.ID >= 800 && w.ID < 900 {
+			cloudines = cloudines + " " + w.Description
+		}
+	}
+	return cloudines
 }
