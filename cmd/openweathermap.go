@@ -49,8 +49,13 @@ type OpenWeatherResponse struct {
 	Cod      int    `json:"cod"`
 }
 
+type OpenWeatherError struct {
+	Cod     string `json:"cod"`
+	Message string `json:"message"`
+}
+
 // GetOpenWeather get weather by city and country
-func GetOpenWeather(city string, country string) *OpenWeatherResponse {
+func GetOpenWeather(city string, country string) (*OpenWeatherResponse, error) {
 	url := "https://api.openweathermap.org/data/2.5/weather?q=" + city + "," + country + "&appid=1508a9a4840a5574c822d70ca2132032"
 	fmt.Println(url)
 	req, err := http.NewRequest("GET", url, nil)
@@ -69,8 +74,45 @@ func GetOpenWeather(city string, country string) *OpenWeatherResponse {
 	err = json.NewDecoder(res.Body).Decode(w)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	return w
+	return w, nil
+}
+
+func (owr *OpenWeatherResponse) getHumanReadableLocation() string {
+	return fmt.Sprintf("%s, %s", owr.Name, owr.Sys.Country)
+}
+
+func (owr *OpenWeatherResponse) getHumanReadableTemperature() string {
+	return fmt.Sprintf("%s", owr.Main.Temp)
+}
+
+func (owr *OpenWeatherResponse) getHumanReadableWind() string {
+	return fmt.Sprintf("%s, %s", owr.Wind.Speed, owr.Wind.Deg)
+}
+
+func (owr *OpenWeatherResponse) getHumanReadableCloudiness() string {
+	// necesario iterar sobre owr.Weather
+	return fmt.Sprintf("%s", owr.Clouds.All)
+}
+
+func (owr *OpenWeatherResponse) getHumanReadablePressure() string {
+	return fmt.Sprintf("%s", owr.Main.Pressure)
+}
+
+func (owr *OpenWeatherResponse) getHumanReadableHumidity() string {
+	return fmt.Sprintf("%s", owr.Main.Humidity)
+}
+
+func (owr *OpenWeatherResponse) getHumanReadableSunrise() string {
+	return fmt.Sprintf("%s", owr.Sys.Sunrise)
+}
+
+func (owr *OpenWeatherResponse) getHumanReadableSunset() string {
+	return fmt.Sprintf("%s", owr.Sys.Sunset)
+}
+
+func (owr *OpenWeatherResponse) getHumanReadableGeoCoordinates() string {
+	return fmt.Sprintf("[%f, %i]", owr.Coord.Lon, owr.Coord.Lat)
 }
