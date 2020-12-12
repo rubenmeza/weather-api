@@ -11,7 +11,7 @@ import (
 type OpenWeatherResponse struct {
 	Coord struct {
 		Lon float64 `json:"lon"`
-		Lat int     `json:"lat"`
+		Lat float64 `json:"lat"`
 	} `json:"coord"`
 	Weather []struct {
 		ID          int    `json:"id"`
@@ -91,7 +91,7 @@ func (owr *OpenWeatherResponse) getHumanReadableTemperature() string {
 
 func (owr *OpenWeatherResponse) getHumanReadableWind() string {
 	direction := getWindCardinalDirection(owr.Wind.Deg)
-	return fmt.Sprintf("%2.f m/s, %s", owr.Wind.Speed, direction)
+	return fmt.Sprintf("%0.2f m/s, %s", owr.Wind.Speed, direction)
 }
 
 func (owr *OpenWeatherResponse) getHumanReadableCloudiness() string {
@@ -118,7 +118,7 @@ func (owr *OpenWeatherResponse) getHumanReadableSunset() string {
 }
 
 func (owr *OpenWeatherResponse) getHumanReadableGeoCoordinates() string {
-	return fmt.Sprintf("[%f, %d]", owr.Coord.Lon, owr.Coord.Lat)
+	return fmt.Sprintf("[%0.2f, %0.2f]", owr.Coord.Lon, owr.Coord.Lat)
 }
 
 func getWindCardinalDirection(deg int) string {
