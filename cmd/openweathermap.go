@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 type OpenWeatherResponse struct {
@@ -107,15 +108,17 @@ func (owr *OpenWeatherResponse) getHumanReadableHumidity() string {
 }
 
 func (owr *OpenWeatherResponse) getHumanReadableSunrise() string {
-	return fmt.Sprintf("%s", owr.Sys.Sunrise)
+	sunrise := getHourMinutes(owr.Sys.Sunrise)
+	return fmt.Sprintf("%s", sunrise)
 }
 
 func (owr *OpenWeatherResponse) getHumanReadableSunset() string {
-	return fmt.Sprintf("%s", owr.Sys.Sunset)
+	sunset := getHourMinutes(owr.Sys.Sunset)
+	return fmt.Sprintf("%s", sunset)
 }
 
 func (owr *OpenWeatherResponse) getHumanReadableGeoCoordinates() string {
-	return fmt.Sprintf("[%f, %i]", owr.Coord.Lon, owr.Coord.Lat)
+	return fmt.Sprintf("[%f, %d]", owr.Coord.Lon, owr.Coord.Lat)
 }
 
 func getWindCardinalDirection(deg int) string {
@@ -132,4 +135,10 @@ func getCloudines(owr OpenWeatherResponse) string {
 		}
 	}
 	return cloudines
+}
+
+func getHourMinutes(unixTimestamp int) string {
+	t := time.Unix(int64(unixTimestamp), 0)
+	fmt.Println(t)
+	return fmt.Sprintf("%02d:%02d", t.Hour(), t.Minute())
 }
