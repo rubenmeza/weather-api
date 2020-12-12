@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -26,7 +28,13 @@ func (wr weatherResource) Routes() chi.Router {
 
 func (wr weatherResource) GetWeatherQueryParams(w http.ResponseWriter, r *http.Request) {
 	city := r.URL.Query().Get("city")
-	w.Write([]byte(city))
+	country := r.URL.Query().Get("country")
+	weather := GetOpenWeather(city, country)
+	fmt.Println(weather.Coord.Lon)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	respose, _ := json.Marshal(weather)
+	w.Write(respose)
 }
 
 func (wr weatherResource) GetWeather(w http.ResponseWriter, r *http.Request) {

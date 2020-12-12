@@ -5,7 +5,6 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/render"
 )
 
 func main() {
@@ -15,7 +14,7 @@ func main() {
 	r.Use(middleware.RealIP)
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
-	r.Use(render.SetContentType(render.ContentTypeJSON))
+	// r.Use(render.SetContentType(render.ContentTypeJSON))
 
 	r.Mount("/weather", weatherResource{}.Routes())
 
