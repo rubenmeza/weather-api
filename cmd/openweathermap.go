@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -71,6 +72,15 @@ func GetOpenWeather(city string, country string) (*OpenWeatherResponse, error) {
 
 	defer res.Body.Close()
 
+	if res.StatusCode != 200 {
+		e := new(OpenWeatherError)
+		err = json.NewDecoder(res.Body).Decode(e)
+		if err != nil {
+			return nil, err
+		}
+		return nil, errors.New(e.Cod + " " + e.Message)
+	}
+
 	w := new(OpenWeatherResponse)
 	err = json.NewDecoder(res.Body).Decode(w)
 
@@ -139,6 +149,5 @@ func getCloudines(owr OpenWeatherResponse) string {
 
 func getHourMinutes(unixTimestamp int) string {
 	t := time.Unix(int64(unixTimestamp), 0)
-	fmt.Println(t)
 	return fmt.Sprintf("%02d:%02d", t.Hour(), t.Minute())
 }

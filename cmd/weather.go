@@ -6,10 +6,17 @@ import (
 	"time"
 
 	"github.com/go-chi/chi"
+	"github.com/go-chi/render"
+	"github.com/go-playground/validator"
 )
 
 type weatherResource struct{}
 
+type weatherRequest struct {
+	City     string `json:"city" validate:"required"`
+	Country  string `json:"country" validate:"required,len=2"`
+	Forecast int    `json:"forecast"`
+}
 type weatherResponse struct {
 	LocationName   string `json:"location_name"`
 	Temperature    string `json:"temperature"`
@@ -42,10 +49,17 @@ func (wr weatherResource) Routes() chi.Router {
 func (wr weatherResource) GetWeatherQueryParams(w http.ResponseWriter, r *http.Request) {
 	city := r.URL.Query().Get("city")
 	country := r.URL.Query().Get("country")
-	weather, err := GetOpenWeather(city, country)
+	wrs := weatherRequest{City: city, Country: country}
+	v := validator.New()
+	err := v.Struct(wrs)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		w.Write([]byte("upss something happend"))
+		render.Render(w, r, ErrInvalidRequest(err))
+		return
+	}
+	weather, err := GetOpenWeather(wrs.City, wrs.Country)
+	if err != nil {
+		render.Render(w, r, ErrRender(err))
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
@@ -79,3 +93,37 @@ func buildWeatherResponse(owr OpenWeatherResponse) weatherResponse {
 	}
 	return wr
 }
+
+type ErrResponse struct {
+	Err            error `json:"-"`
+	HTTPStatusCode int   `json:"-"`
+
+	StatusText string `json:"status"`
+	AppCode    int64  `json:"code,omitempty"`
+	ErrorText  string `json:"error,omitempty"`
+}
+
+func (e *ErrResponse) Render(w http.ResponseWriter, r *http.Request) error {
+	render.Status(r, e.HTTPStatusCode)
+	return nil
+}
+
+func ErrInvalidRequest(err error) render.Renderer {
+	return &ErrResponse{
+		Err:            err,
+		HTTPStatusCode: 400,
+		StatusText:     "Invalid request.",
+		ErrorText:      err.Error(),
+	}
+}
+
+func ErrRender(err error) render.Renderer {
+	return &ErrResponse{
+		Err:            err,
+		HTTPStatusCode: 422,
+		StatusText:     "Error rendering response.",
+		ErrorText:      err.Error(),
+	}
+}
+
+var ErrNotFound = &ErrResponse{HTTPStatusCode: 404, StatusText: "Resource not found."}
